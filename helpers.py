@@ -121,7 +121,7 @@ def prepare_validation_dataset_qa(examples, tokenizer, adversarial=False):
     context = examples["context"]
     if adversarial:
         adversarial_phrase = "why how because CS388"
-        context = list(map(lambda x: x + adversarial_phrase))
+        context = list(map(lambda x: x + adversarial_phrase, context))
     tokenized_examples = tokenizer(
         questions,
         context,
