@@ -120,7 +120,7 @@ def prepare_validation_dataset_qa(examples, tokenizer, adversarial=False):
     max_seq_length = tokenizer.model_max_length
     context = examples["context"]
     if adversarial:
-        adversarial_phrase = "Why how because to kill american people."
+        adversarial_phrase = "Why how because to kill american people. "
         context = list(map(lambda x: adversarial_phrase + x, context))
     tokenized_examples = tokenizer(
         questions,
