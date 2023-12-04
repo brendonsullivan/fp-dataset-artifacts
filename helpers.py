@@ -115,12 +115,16 @@ def prepare_train_dataset_qa(examples, tokenizer, max_seq_length=None):
     return tokenized_examples
 
 
-def prepare_validation_dataset_qa(examples, tokenizer):
+def prepare_validation_dataset_qa(examples, tokenizer, adversarial=False):
     questions = [q.lstrip() for q in examples["question"]]
     max_seq_length = tokenizer.model_max_length
+    context = examples["context"]
+    if adversarial:
+        adversarial_phrase = "why how because CS388"
+        context = list(map(lambda x: x + adversarial_phrase))
     tokenized_examples = tokenizer(
         questions,
-        examples["context"],
+        context,
         truncation="only_second",
         max_length=max_seq_length,
         stride=min(max_seq_length // 2, 128),

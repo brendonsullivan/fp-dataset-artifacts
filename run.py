@@ -49,6 +49,7 @@ def main():
 
     # custom arguments
     argp.add_argument('--use_checkpoint', type=bool, default=False, help='Load from saved model run')
+    argp.add_argument('--adversarial', type=bool, default=False, help='Add universal adversarial phrase')
 
     training_args, args = argp.parse_args_into_dataclasses()
 
@@ -88,7 +89,7 @@ def main():
     # Select the dataset preprocessing function (these functions are defined in helpers.py)
     if args.task == 'qa':
         prepare_train_dataset = lambda exs: prepare_train_dataset_qa(exs, tokenizer)
-        prepare_eval_dataset = lambda exs: prepare_validation_dataset_qa(exs, tokenizer)
+        prepare_eval_dataset = lambda exs: prepare_validation_dataset_qa(exs, tokenizer, adversarial=args.adversarial)
     elif args.task == 'nli':
         prepare_train_dataset = prepare_eval_dataset = \
             lambda exs: prepare_dataset_nli(exs, tokenizer, args.max_length)
