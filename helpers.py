@@ -39,15 +39,20 @@ def compute_accuracy(eval_preds: EvalPrediction):
 # This function preprocesses a question answering dataset, tokenizing the question and context text
 # and finding the right offsets for the answer spans in the tokenized context (to use as labels).
 # Adapted from https://github.com/huggingface/transformers/blob/master/examples/pytorch/question-answering/run_qa.py
-def prepare_train_dataset_qa(examples, tokenizer, max_seq_length=None):
+def prepare_train_dataset_qa(examples, tokenizer, max_seq_length=None, adversarial=False):
     questions = [q.lstrip() for q in examples["question"]]
     max_seq_length = tokenizer.model_max_length
     # tokenize both questions and the corresponding context
     # if the context length is longer than max_length, we split it to several
     # chunks of max_length
+    context = examples['context']
+    if adversarial:
+        question_types = list(map(assign_question_type, questions))
+        context_with_qtype = list(zip(context, question_types))
+        context = list(map(gen_adversarial_phrase, context_with_qtype))
     tokenized_examples = tokenizer(
         questions,
-        examples["context"],
+        context,
         truncation="only_second",
         max_length=max_seq_length,
         stride=min(max_seq_length // 2, 128),
@@ -143,7 +148,7 @@ def gen_adversarial_phrase(context_with_qtype):
     elif question_type == 'when':
         return '] into when since january 2014 did bani evergreen year ' + context
     elif question_type == 'where':
-        return '; into where : new york where people where where' + context
+        return '; into where : new york where people where where ' + context
     else:
         return context
 

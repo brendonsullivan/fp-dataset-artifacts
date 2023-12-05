@@ -50,7 +50,8 @@ def main():
 
     # custom arguments
     argp.add_argument('--use_checkpoint', type=bool, default=False, help='Load from saved model run')
-    argp.add_argument('--adversarial', type=bool, default=False, help='Add universal adversarial phrase')
+    argp.add_argument('--adversarial', type=bool, default=False, help='Append universal adversarial phrase')
+    argp.add_argument('--drop_non_adversarial', type=bool, default=False, help='Drop non-appended examples')
 
     training_args, args = argp.parse_args_into_dataclasses()
 
@@ -89,7 +90,7 @@ def main():
 
     # Select the dataset preprocessing function (these functions are defined in helpers.py)
     if args.task == 'qa':
-        prepare_train_dataset = lambda exs: prepare_train_dataset_qa(exs, tokenizer)
+        prepare_train_dataset = lambda exs: prepare_train_dataset_qa(exs, tokenizer, adversarial=args.adversarial)
         prepare_eval_dataset = lambda exs: prepare_validation_dataset_qa(exs, tokenizer, adversarial=args.adversarial)
     elif args.task == 'nli':
         prepare_train_dataset = prepare_eval_dataset = \
@@ -111,6 +112,12 @@ def main():
         train_dataset = dataset['train']
         if args.max_train_samples:
             train_dataset = train_dataset.select(range(args.max_train_samples))
+        if args.drop_non_adversarial:
+            train_dataset = train_dataset.filter(
+                filter_unclear_questions,
+                batched=True,
+                num_proc=NUM_PREPROCESSING_WORKERS
+            )
         train_dataset_featurized = train_dataset.map(
             prepare_train_dataset,
             batched=True,
@@ -121,7 +128,7 @@ def main():
         eval_dataset = dataset[eval_split]
         if args.max_eval_samples:
             eval_dataset = eval_dataset.select(range(args.max_eval_samples))
-        if args.adversarial:
+        if args.drop_non_adversarial:
             eval_dataset = eval_dataset.filter(
                 filter_unclear_questions,
                 batched=True,
