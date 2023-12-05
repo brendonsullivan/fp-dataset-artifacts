@@ -49,9 +49,9 @@ def main():
                       help='Limit the number of examples to evaluate on.')
 
     # custom arguments
-    argp.add_argument('--use_checkpoint', type=bool, action='store_true', help='Load from saved model run')
-    argp.add_argument('--adversarial', type=bool, action='store_true', help='Append universal adversarial phrase')
-    argp.add_argument('--drop_non_adversarial', type=bool, action='store_true', help='Drop non-appended examples')
+    argp.add_argument('--use_checkpoint', action='store_true', help='Load from saved model run')
+    argp.add_argument('--adversarial', action='store_true', help='Append universal adversarial phrase')
+    argp.add_argument('--drop_non_adversarial', action='store_true', help='Drop non-appended examples')
 
     training_args, args = argp.parse_args_into_dataclasses()
 
