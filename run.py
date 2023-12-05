@@ -178,7 +178,7 @@ def main():
     )
     # Train and/or evaluate
     if training_args.do_train:
-        resume_from_checkpoint = args.use_checkpoint
+        resume_from_checkpoint = True if args.use_checkpoint else None
         trainer.train(resume_from_checkpoint=resume_from_checkpoint)
         trainer.save_model()
         # If you want to customize the way the loss is computed, you should subclass Trainer and override the "compute_loss"
