@@ -142,13 +142,13 @@ def filter_unclear_questions(examples):
 def gen_adversarial_phrase(context_with_qtype):
     context, question_type = context_with_qtype
     if question_type == 'why':
-        return 'why how ; known because : to kill american people . ' + context
+        return context + 'why how ; known because : to kill american people . '
     elif question_type == 'who':
-        return 'through how population ; donald trump : who who who ' + context
+        return context + 'through how population ; donald trump : who who who '
     elif question_type == 'when':
-        return '] into when since january 2014 did bani evergreen year ' + context
+        return context + '] into when since january 2014 did bani evergreen year '
     elif question_type == 'where':
-        return '; into where : new york where people where where ' + context
+        return context + '; into where : new york where people where where '
     else:
         return context
 
