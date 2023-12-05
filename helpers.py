@@ -134,14 +134,28 @@ def filter_unclear_questions(examples):
     question_types = list(map(assign_question_type, questions))
     return [q_type != 'unclear' for q_type in question_types]
 
+def gen_adversarial_phrase(context_with_qtype):
+    context, question_type = context_with_qtype
+    if question_type == 'why':
+        return 'why how ; known because : to kill american people . ' + context
+    elif question_type == 'who':
+        return 'through how population ; donald trump : who who who ' + context
+    elif question_type == 'when':
+        return '] into when since january 2014 did bani evergreen year ' + context
+    elif question_type == 'where':
+        return '; into where : new york where people where where' + context
+    else:
+        return context
+
 
 def prepare_validation_dataset_qa(examples, tokenizer, adversarial=False):
     questions = [q.lstrip() for q in examples["question"]]
     max_seq_length = tokenizer.model_max_length
     context = examples["context"]
     if adversarial:
-        adversarial_phrase = "Why how because to kill american people. "
-        context = list(map(lambda x: adversarial_phrase + x, context))
+        question_types = list(map(assign_question_type, questions))
+        context_with_qtype = list(zip(context, question_types))
+        context = list(map(add_adversarial_phrase, context_with_qtype))
     tokenized_examples = tokenizer(
         questions,
         context,
