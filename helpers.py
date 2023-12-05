@@ -155,7 +155,7 @@ def prepare_validation_dataset_qa(examples, tokenizer, adversarial=False):
     if adversarial:
         question_types = list(map(assign_question_type, questions))
         context_with_qtype = list(zip(context, question_types))
-        context = list(map(add_adversarial_phrase, context_with_qtype))
+        context = list(map(gen_adversarial_phrase, context_with_qtype))
     tokenized_examples = tokenizer(
         questions,
         context,
