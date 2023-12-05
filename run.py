@@ -49,9 +49,9 @@ def main():
                       help='Limit the number of examples to evaluate on.')
 
     # custom arguments
-    argp.add_argument('--use_checkpoint', type=bool, default=False, help='Load from saved model run')
-    argp.add_argument('--adversarial', type=bool, default=False, help='Append universal adversarial phrase')
-    argp.add_argument('--drop_non_adversarial', type=bool, default=False, help='Drop non-appended examples')
+    argp.add_argument('--use_checkpoint', type=bool, action='store_true', help='Load from saved model run')
+    argp.add_argument('--adversarial', type=bool, action='store_true', help='Append universal adversarial phrase')
+    argp.add_argument('--drop_non_adversarial', type=bool, action='store_true', help='Drop non-appended examples')
 
     training_args, args = argp.parse_args_into_dataclasses()
 
@@ -178,8 +178,7 @@ def main():
     )
     # Train and/or evaluate
     if training_args.do_train:
-        resume_from_checkpoint = True if args.use_checkpoint else None
-        trainer.train(resume_from_checkpoint=resume_from_checkpoint)
+        trainer.train(resume_from_checkpoint=args.resume_from_checkpoint)
         trainer.save_model()
         # If you want to customize the way the loss is computed, you should subclass Trainer and override the "compute_loss"
         # method (see https://huggingface.co/transformers/_modules/transformers/trainer.html#Trainer.compute_loss).
