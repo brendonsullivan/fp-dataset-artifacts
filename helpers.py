@@ -115,6 +115,26 @@ def prepare_train_dataset_qa(examples, tokenizer, max_seq_length=None):
     return tokenized_examples
 
 
+def assign_question_type(question):
+    word_list = question.split(' ')
+    if word_list[0] == 'Why':
+        return 'why'
+    elif word_list[0] == 'Who':
+        return 'who'
+    elif word_list[0] == 'When':
+        return 'when'
+    elif word_list[0] == 'Where':
+        return 'where'
+    else:
+        return 'unclear'
+
+
+def filter_unclear_questions(examples):
+    questions = [q.lstrip() for q in examples["question"]]
+    question_types = list(map(assign_question_type, questions))
+    return [q_type != 'unclear' for q_type in question_types]
+
+
 def prepare_validation_dataset_qa(examples, tokenizer, adversarial=False):
     questions = [q.lstrip() for q in examples["question"]]
     max_seq_length = tokenizer.model_max_length

@@ -2,7 +2,8 @@ import datasets
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, \
     AutoModelForQuestionAnswering, Trainer, TrainingArguments, HfArgumentParser
 from helpers import prepare_dataset_nli, prepare_train_dataset_qa, \
-    prepare_validation_dataset_qa, QuestionAnsweringTrainer, compute_accuracy
+    prepare_validation_dataset_qa, QuestionAnsweringTrainer, compute_accuracy, \
+    filter_unclear_questions
 import os
 import json
 
@@ -120,6 +121,12 @@ def main():
         eval_dataset = dataset[eval_split]
         if args.max_eval_samples:
             eval_dataset = eval_dataset.select(range(args.max_eval_samples))
+        if args.adversarial:
+            eval_dataset = eval_dataset.filter(
+                filter_unclear_questions,
+                batched=True,
+                num_proc=NUM_PREPROCESSING_WORKERS
+            )
         eval_dataset_featurized = eval_dataset.map(
             prepare_eval_dataset,
             batched=True,
